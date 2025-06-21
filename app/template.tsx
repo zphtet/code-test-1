@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Header from "@/components/header";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -9,7 +10,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2 seconds delay
+    }, 500); // 2 seconds delay
 
     return () => clearTimeout(timer);
   }, []);
@@ -32,5 +33,10 @@ export default function Template({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div>
+      <Header />
+      {children}
+    </div>
+  );
 }
