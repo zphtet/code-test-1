@@ -11,17 +11,18 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      const firstSection = document.getElementById("first");
-      if (firstSection) {
-        firstSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 500);
+    }, 2000);
+
+    const firstSection = document.getElementById("first");
+    if (firstSection) {
+      firstSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="relative">
+    <div className="">
       {isLoading && (
         <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
           <div className="flex flex-col items-center space-y-4">

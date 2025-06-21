@@ -44,7 +44,7 @@ const Human = ({
 
   return (
     <motion.div
-      className="absolute "
+      className="absolute  z-10"
       style={{
         top: position.top,
         left: position.left,

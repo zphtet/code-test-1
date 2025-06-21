@@ -9,21 +9,21 @@ const Footer = () => {
           src={"/images/discord.svg"}
           width={50}
           height={50}
-          className="  w-[25px] aspect-square sm:w-[40px] md:w-[50px]"
+          className="  w-[25px] aspect-square sm:w-[30px] md:w-[35px]"
         />
         <Image
           alt="Opensea"
           src={"/images/opensea.svg"}
           width={50}
           height={50}
-          className="  w-[25px] aspect-square sm:w-[40px] md:w-[50px]"
+          className="  w-[25px] aspect-square sm:w-[30px] md:w-[35px]"
         />
         <Image
           alt="Twitter"
           src={"/images/twitter.svg"}
           width={50}
           height={50}
-          className="  w-[25px] aspect-square sm:w-[40px] md:w-[50px]"
+          className="  w-[25px] aspect-square sm:w-[30px] md:w-[35px]"
         />
       </div>
     </div>
