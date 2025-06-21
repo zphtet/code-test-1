@@ -9,6 +9,7 @@ interface FadeInProps {
   delay?: number;
   duration?: number;
   once?: boolean;
+  threshold?: number;
 }
 
 export default function FadeIn({
@@ -16,20 +17,30 @@ export default function FadeIn({
   className = '',
   delay = 0,
   duration = 0.5,
-  once = true,
+  once = false,
+  threshold = 0.1,
 }: FadeInProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once });
+  const isInView = useInView(ref, { 
+    once,
+    amount: threshold,
+  });
+
+  const variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+  };
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+      variants={variants}
+      initial="hidden"
+      animate={isInView ? "visible" : "hidden"}
       transition={{
         duration,
         delay,
-        ease: 'easeOut',
+        ease: "easeInOut",
       }}
       className={className}
     >

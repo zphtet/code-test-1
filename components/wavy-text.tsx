@@ -5,13 +5,18 @@ import { motion } from "framer-motion";
 interface WavyTextProps {
   text: string;
   className?: string;
+  letterSpacing?: string;
 }
 
-export default function WavyText({ text, className = "" }: WavyTextProps) {
+export default function WavyText({
+  text,
+  className = "",
+  letterSpacing = "normal",
+}: WavyTextProps) {
   const characters = text.split("");
 
   return (
-    <div className={`flex overflow-hidden ${className}`}>
+    <div className={`flex flex-wrap overflow-hidden justify-center items-center w-full ${className}`}>
       {characters.map((char, index) => (
         <motion.span
           key={index}
@@ -26,6 +31,7 @@ export default function WavyText({ text, className = "" }: WavyTextProps) {
             repeatType: "reverse",
             delay: index * 0.1, // Stagger effect
           }}
+          style={{ letterSpacing }}
           className="inline-block whitespace-pre"
         >
           {char}

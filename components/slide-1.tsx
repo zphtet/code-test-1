@@ -1,9 +1,10 @@
 "use client";
 
+import { useRef } from "react";
 import Human from "./human";
 import Rectangle from "./rectangle";
 import WavyText from "./wavy-text";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 
 const lines = [
   "ブロックチェーンネットワークを使い",
@@ -17,17 +18,42 @@ const SlideOne = () => {
   const posX = useTransform(scrollYProgress, [1, 0.5], ["40%", "70%"]);
   const rotation = useTransform(scrollYProgress, [1, 0.5], [0, -90]);
   const size = useTransform(scrollYProgress, [1, 0.5], [300, 140]);
-//   const opacity = useTransform(scrollYProgress, [1, 0.5], [0, 1]);
+  //   const opacity = useTransform(scrollYProgress, [1, 0.5], [0, 1]);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: false, amount: 1 });
+
   return (
-    <div className="w-screen min-h-screen bg-amber-100">
-      <div className="h-screen w-screen bg-green-200 relative">
-        <div className="">
-          <motion.div className="absolute top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div className="w-screen min-h-screen bg-amber-50">
+      <div className="h-screen w-screen bg-blue-700 relative">
+        <div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute top-30 left-16">
+              <Rectangle bgColor="#FF6B6B" direction="horizontal" />
+            </div>
+            <div className="absolute top-32 right-24">
+              <Rectangle bgColor="#4ECDC4" direction="vertical" />
+            </div>
+            <div className="absolute bottom-28 left-1/3">
+              <Rectangle bgColor="#45B7D1" direction="horizontal" />
+            </div>
+            <div className="absolute  bottom-10 right-1/4 ">
+              <Rectangle bgColor="#8B5CF6" direction="vertical" />
+            </div>
+          </div>
+
+          <motion.div
+            ref={ref}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isInView ? 1 : 0 }}
+            transition={{ duration: 1 }}
+            className="absolute flex flex-col items-center justify-center space-y-5 px-5 w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] top-3/4 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
             {lines.map((line, index) => (
               <WavyText
                 key={index}
                 text={line}
-                className="text-xl sm:text-2xl  font-bold tracking-wider  max-w-xl mx-auto"
+                letterSpacing="0.1em"
+                className="text-xl sm:text-2xl text-white font-bold tracking-wider w-full text-center"
               />
             ))}
           </motion.div>
