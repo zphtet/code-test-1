@@ -1,6 +1,6 @@
 const Header = () => {
   return (
-    <div className="absolute top-10 left-10 ">
+    <div className="fixed z-10 top-10 left-10 ">
       <a href="">
         <svg
           version="1.1"

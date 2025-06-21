@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export default function Template({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -10,33 +11,33 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 500); // 2 seconds delay
+      const firstSection = document.getElementById("first");
+      if (firstSection) {
+        firstSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="flex flex-col items-center space-y-4">
-          <Image
-            src="/images/loading.webp"
-            alt="Loading..."
-            width={200}
-            height={200}
-            className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
-            //   className="animate-spin"
-          />
-          {/* <p className="text-gray-600 text-lg font-medium">Loading...</p> */}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-4">
+            <Image
+              src="/images/loading.webp"
+              alt="Loading..."
+              width={200}
+              height={200}
+              className="w-[100px] h-[100px] md:w-[200px] md:h-[200px]"
+            />
+          </div>
+        </div>
+      )}
       <Header />
       {children}
+      <Footer />
     </div>
   );
 }
