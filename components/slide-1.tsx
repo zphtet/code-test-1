@@ -4,7 +4,15 @@ import { useRef } from "react";
 import Human from "./human";
 import Rectangle from "./rectangle";
 import WavyText from "./wavy-text";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { useMediaQuery } from "@uidotdev/usehooks";
+import {
+  motion,
+  useInView,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { useLogoStore } from "@/zustand/store";
 
 const lines = [
   "ブロックチェーンネットワークを使い",
@@ -26,6 +34,7 @@ const lines3 = [
   "プロジェクトを開始しました。",
 ];
 const SlideOne = () => {
+  const isSmallDevice = useMediaQuery("only screen and (max-width : 768px)");
   const targetRef = useRef(null);
   const firstSectionRef = useRef(null);
   const { scrollYProgress: mainScrollProgress } = useScroll({
@@ -33,10 +42,18 @@ const SlideOne = () => {
   });
   const { scrollYProgress: firstSectionProgress } = useScroll({
     target: firstSectionRef,
-    offset: ["start end", "end start"],
+    offset: ["end end", "start start"],
   });
 
-  const humanY = useTransform(firstSectionProgress, [0, 1], ["20%", "0%"]);
+  const humanY = useTransform(firstSectionProgress, [0, 1], ["0%", "-200%"]);
+  const humanRotate = useTransform(firstSectionProgress, [0, 1], [0, -90]);
+  const humanSize = useTransform(
+    firstSectionProgress,
+    [0, 1],
+    [isSmallDevice ? 200 : 300, isSmallDevice ? 300 : 500]
+  );
+
+  const { showLogo, setLogoState } = useLogoStore();
 
   const posY = useTransform(mainScrollProgress, [1, 0.5], ["30%", "-60%"]);
   const posX = useTransform(mainScrollProgress, [1, 0.5], ["40%", "70%"]);
@@ -46,52 +63,103 @@ const SlideOne = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 1 });
 
+  useMotionValueEvent(firstSectionProgress, "change", (latest) => {
+    console.log("Scroll progress as number:", latest);
+
+    if (latest > 0.5) {
+      if (showLogo) {
+        setLogoState(false);
+      }
+    } else {
+      if (!showLogo) {
+        console.log("showLogo", showLogo);
+        setLogoState(true);
+      }
+    }
+
+    // It's already a number (0 to 1)
+  });
+
   return (
     <div className=" bg-amber-50">
-      <div
-        ref={firstSectionRef}
-        className="h-screen w-screen bg-amber-100 relative overflow-hidden"
-      >
-        {/* <FadeIn> */}
-        <div className="flex flex-col absolute top-30 z-20 left-10 sm:top-auto sm:bottom-15 sm:left-10 space-y-5 justify-center">
-          {lines3.map((line, index) => (
-            <WavyText
-              key={index}
-              text={line}
-              letterSpacing="0.1em"
-              className="text-xl sm:text-2xl text-fluffy font-bold tracking-wider w-full "
+      <div ref={firstSectionRef}>
+        <motion.div className="h-screen w-screen bg-amber-100">
+          <div className="flex items-center justify-center w-full h-full">
+            <svg
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              viewBox="0 0 205 40"
+              xmlSpace="preserve"
+              fill="#203D99"
+              className="w-[300px] sm:w-[400px] md:w-[500px]"
+            >
+              <g>
+                <path d="M13.5,3H3.8c-1.2,0-2.2,1-2.2,2.2v24.1c0,1.2,1,2.2,2.2,2.2h1.6c1.2,0,2.2-1,2.2-2.2V18.9h5.8c1.2,0,2.2-1,2.2-2.2v-1.4 c0-1.2-1-2.2-2.2-2.2H7.5V8.7h6c1.2,0,2.2-1,2.2-2.2V5.1C15.7,3.9,14.7,3,13.5,3z"></path>
+                <path d="M21.4,0.7H20c-1.2,0-2.2,1-2.2,2.2v26.3c0,1.2,1,2.2,2.2,2.2h1.4c1.2,0,2.2-1,2.2-2.2V2.9C23.6,1.7,22.6,0.7,21.4,0.7z"></path>
+                <path d="M40.1,12.3h-1.4c-1.2,0-2.2,1-2.2,2.2v8.9c0,0.6,0,1.8-0.4,2.3c-0.2,0.3-0.7,0.4-1.3,0.4c-0.6,0-1-0.1-1.3-0.4 c-0.4-0.5-0.4-1.7-0.4-2.3v-8.9c0-1.2-1-2.2-2.2-2.2h-1.4c-1.2,0-2.2,1-2.2,2.2v9.3c0,1.6,0.2,3.6,1.6,5.4c1.8,2.3,4.5,2.6,5.9,2.6 c1.4,0,4.1-0.3,5.9-2.6c1.4-1.8,1.6-3.8,1.6-5.4v-9.3C42.3,13.3,41.3,12.3,40.1,12.3z"></path>
+                <path d="M54.7,0.6L54.7,0.6c-0.4-0.1-1-0.3-1.9-0.3c-1.4,0-6,0.5-6,7.2v4.9c-1,0.2-1.7,1.1-1.7,2.1v1.4c0,1,0.7,1.9,1.7,2.1v11.3 c0,1.2,1,2.2,2.2,2.2h1.4c1.2,0,2.2-1,2.2-2.2V18h1.5c1.2,0,2.2-1,2.2-2.2v-1.4c0-1.2-1-2.2-2.2-2.2h-1.5V7.8 c0-1.1,0.2-1.6,0.2-1.8c0,0,0.1,0,0.2,0c0.3,0,0.3,0,0.3,0c0.7,0.3,1.4,0.2,2-0.2c0.6-0.4,0.9-1.1,0.9-1.8V2.7 C56.2,1.7,55.6,0.9,54.7,0.6z"></path>
+                <path d="M68.2,0.6L68.2,0.6c-0.4-0.1-1-0.3-1.9-0.3c-1.4,0-6,0.5-6,7.2v4.9c-1,0.2-1.7,1.1-1.7,2.1v1.4c0,1,0.7,1.9,1.7,2.1v11.3 c0,1.2,1,2.2,2.2,2.2h1.4c1.2,0,2.2-1,2.2-2.2V18h1.5c1.2,0,2.2-1,2.2-2.2v-1.4c0-1.2-1-2.2-2.2-2.2h-1.5V7.8 c0-1.1,0.2-1.6,0.2-1.8c0,0,0.1,0,0.2,0c0.3,0,0.3,0,0.3,0c0.7,0.3,1.4,0.2,2-0.2c0.6-0.4,0.9-1.1,0.9-1.8V2.7 C69.7,1.7,69.1,0.9,68.2,0.6z"></path>
+                <path d="M88.5,12.3h-1.7c-0.9,0-1.7,0.5-2,1.3l-3.5,8.6l-4.1-8.7c-0.4-0.8-1.1-1.2-2-1.2h-1.7c-0.7,0-1.4,0.4-1.8,1 c-0.4,0.6-0.4,1.4-0.1,2.1l6.6,14.1l-3.1,7.2c-0.3,0.7-0.2,1.4,0.2,2s1.1,1,1.8,1h1.7c0.9,0,1.7-0.5,2-1.3l9.7-23 c0.3-0.7,0.2-1.4-0.2-2C89.9,12.7,89.3,12.3,88.5,12.3z"></path>
+                <path d="M124,3h-1.6c-1.2,0-2.2,1-2.2,2.2v8.1H110V5.1c0-1.2-1-2.2-2.2-2.2h-1.6c-1.2,0-2.2,1-2.2,2.2v24.1c0,1.2,1,2.2,2.2,2.2 h1.6c1.2,0,2.2-1,2.2-2.2V19h10.3v10.3c0,1.2,1,2.2,2.2,2.2h1.6c1.2,0,2.2-1,2.2-2.2V5.1C126.2,3.9,125.2,3,124,3z"></path>
+                <path d="M149.1,13.6h-1.6c-1.2,0-2.2,1-2.2,2.2v4.4c0,2.1-0.1,3.1-0.7,4.1c-1,1.6-3.1,1.8-3.8,1.8c-0.6,0-2.8-0.1-3.8-1.8 c-0.6-0.9-0.7-2-0.7-4.1v-4.4c0-1.2-1-2.2-2.2-2.2h-1.6c-1.2,0-2.2,1-2.2,2.2v4.4c0,2.7,0.1,5,1.8,7.4c1.9,2.7,4.9,4.2,8.6,4.2 c3.7,0,6.8-1.5,8.6-4.2c1.6-2.4,1.7-4.7,1.7-7.4v-4.4C151.3,14.6,150.3,13.6,149.1,13.6z"></path>
+                <path d="M181.2,15.5h-10.1c-1.2,0-2.2,1-2.2,2.2v1.4c0,1.2,1,2.2,2.2,2.2h5.9c-0.2,0.6-0.5,1.2-0.8,1.6c-0.9,1.4-3.2,3.1-6.6,3.1 c-4.9,0-8.6-3.7-8.6-8.7c0-5,3.8-8.9,8.7-8.9c2.7,0,4.6,1.3,5.5,2c0.6,0.5,1.3,1.3,1.8,2.1c0.3,0.5,0.9,0.9,1.5,1 c0.6,0.1,1.2,0,1.7-0.4l1.3-1c0.9-0.7,1.1-2,0.4-2.9c-1-1.4-2-2.4-3.3-3.5c-1.7-1.3-4.5-3-8.9-3c-4,0-7.7,1.5-10.4,4.1 c-2.8,2.7-4.3,6.4-4.3,10.4c0,8.3,6.3,14.6,14.6,14.6c4.5,0,8.3-1.7,10.8-4.9c2.5-3.2,2.9-7.2,2.9-9.2 C183.4,16.5,182.4,15.5,181.2,15.5z"></path>
+                <path d="M199.9,16.2c-1.1-0.8-2.2-1.3-3.9-2.1c-0.4-0.2-0.8-0.4-1.2-0.6l-0.1,0c-2.6-1.3-3-1.6-3-2.7c0-0.5,0.2-2.3,2.3-2.3 c1.3,0,2.2,0.6,2.8,1.8c0.3,0.6,0.9,1,1.5,1.1c0.6,0.1,1.3,0,1.8-0.5l1.2-1c0.8-0.7,1-1.8,0.5-2.7c-1.5-2.9-4.4-4.6-7.8-4.6 c-5.5,0-8.3,4.1-8.3,8.2c0,1.4,0.3,2.7,1.1,3.9c1.2,1.9,2.8,2.8,5.3,4c2.4,1.2,3.5,1.8,3.9,2c1.1,0.7,1.3,1.3,1.3,1.9 c0,1.9-1.6,3.4-3.7,3.4c-1.1,0-2.2-0.5-2.8-1.2c0,0,0,0,0,0c-0.2-0.3-0.7-1-0.9-1.6c-0.2-0.6-0.6-1-1.2-1.3c-0.6-0.2-1.2-0.2-1.8,0 l-1.4,0.7c-1,0.5-1.5,1.6-1.1,2.7c0.2,0.4,0.6,1.8,2,3.3c0.7,0.8,2.8,3.3,7.2,3.3c5.4,0,9.7-4,9.7-9.2 C203.4,18.6,200.7,16.7,199.9,16.2z"></path>
+                <path d="M130.9,10.3c0.3,0.3,0.7,0.5,1.1,0.5c0.3,0,0.6-0.1,0.9-0.3l1.7-1.4l1.7,1.4c0.3,0.2,0.6,0.3,0.9,0.3 c0.4,0,0.8-0.2,1.1-0.5c0.5-0.6,0.4-1.5-0.2-2l-1.2-1l1.2-1c0.6-0.5,0.7-1.4,0.2-2c-0.5-0.6-1.4-0.7-2-0.2l-1.7,1.4l-1.7-1.4 c-0.6-0.5-1.5-0.4-2,0.2c-0.5,0.6-0.4,1.5,0.2,2l1.2,1l-1.2,1C130.5,8.8,130.4,9.7,130.9,10.3z"></path>
+                <path d="M151.3,4.3c-0.5-0.6-1.4-0.7-2-0.2l-1.7,1.4l-1.7-1.4c-0.6-0.5-1.5-0.4-2,0.2c-0.5,0.6-0.4,1.5,0.2,2l1.2,1l-1.2,1 c-0.6,0.5-0.7,1.4-0.2,2c0.3,0.3,0.7,0.5,1.1,0.5c0.3,0,0.6-0.1,0.9-0.3l1.7-1.4l1.7,1.4c0.3,0.2,0.6,0.3,0.9,0.3 c0.4,0,0.8-0.2,1.1-0.5c0.5-0.6,0.4-1.5-0.2-2l-1.2-1l1.2-1C151.7,5.8,151.8,4.9,151.3,4.3z"></path>
+              </g>
+            </svg>
+          </div>
+        </motion.div>
+        <motion.div className="h-screen w-screen bg-amber-100 relative ">
+          {/* <FadeIn> */}
+          <div className="flex flex-col absolute top-30 z-20 left-10 sm:top-auto sm:bottom-15 sm:left-10 space-y-5 justify-center">
+            {lines3.map((line, index) => (
+              <WavyText
+                key={index}
+                text={line}
+                letterSpacing="0.1em"
+                className="text-xl sm:text-2xl text-fluffy font-bold tracking-wider w-full "
+              />
+            ))}
+          </div>
+          {/* </FadeIn> */}
+          {/* Right side rectangles */}
+          <div className="absolute right-0 w-[50%] h-full">
+            <div className="absolute right-[45%] top-[25%]">
+              <Rectangle bgColor="#FF6B6B" direction="horizontal" />
+            </div>
+            <div className="absolute right-[30%] top-[65%]">
+              <Rectangle bgColor="#4ECDC4" direction="vertical" />
+            </div>
+            <div className="absolute right-[20%] top-[40%]">
+              <Rectangle bgColor="#45B7D1" direction="horizontal" />
+            </div>
+            <div className="absolute right-[10%] top-[80%]">
+              <Rectangle bgColor="#8B5CF6" direction="vertical" />
+            </div>
+            <div className="absolute right-[5%] top-[15%]">
+              <Rectangle bgColor="#FFA500" direction="horizontal" />
+            </div>
+          </div>
+          <motion.div
+            style={{
+              y: humanY,
+              rotate: humanRotate,
+            }}
+            className="absolute left-1/2 -translate-x-1/2 bottom-10 w-[300px] h-[300px]"
+          >
+            <Human
+              shake={true}
+              shakeSpeed={5}
+              shakeDirection="vertical"
+              size={{ width: humanSize, height: humanSize }}
             />
-          ))}
-        </div>
-        {/* </FadeIn> */}
-        {/* Right side rectangles */}
-        <div className="absolute right-0 w-[50%] h-full">
-          <div className="absolute right-[45%] top-[25%]">
-            <Rectangle bgColor="#FF6B6B" direction="horizontal" />
-          </div>
-          <div className="absolute right-[30%] top-[65%]">
-            <Rectangle bgColor="#4ECDC4" direction="vertical" />
-          </div>
-          <div className="absolute right-[20%] top-[40%]">
-            <Rectangle bgColor="#45B7D1" direction="horizontal" />
-          </div>
-          <div className="absolute right-[10%] top-[80%]">
-            <Rectangle bgColor="#8B5CF6" direction="vertical" />
-          </div>
-          <div className="absolute right-[5%] top-[15%]">
-            <Rectangle bgColor="#FFA500" direction="horizontal" />
-          </div>
-        </div>
-        <motion.div
-          style={{
-            y: humanY,
-          }}
-          className="absolute left-1/2 -translate-x-1/2 bottom-10 w-[300px] h-[300px]"
-        >
-          <Human size={{ width: 300, height: 300 }} />
+          </motion.div>
         </motion.div>
       </div>
-      <div className="h-screen overflow-hidden  w-screen bg-amber-100 flex items-center justify-center">
+      <motion.div className="h-screen overflow-hidden  w-screen bg-amber-100 flex items-center justify-center">
         <div className="relative w-[300px] sm:w-[450px] md:w-[600px] h-[250px] sm:h-[300px] md:h-[400px]">
           <motion.div
             animate={{
@@ -105,43 +173,43 @@ const SlideOne = () => {
             className="absolute inset-0 w-full h-full"
           >
             {/* Rectangle 1 - Top */}
-            <motion.div className="absolute -top-16 sm:-top-24 md:-top-32 left-1/2 -translate-x-1/2">
+            <motion.div className="absolute -top-4 sm:-top-6 md:-top-8 left-1/2 -translate-x-1/2">
               <Rectangle bgColor="#FF6B6B" direction="horizontal" />
             </motion.div>
             {/* Rectangle 2 - Top Right */}
-            <motion.div className="absolute top-[5%] sm:top-[2%] right-[5%] sm:right-[2%]">
+            <motion.div className="absolute top-[10%] right-[10%]">
               <Rectangle bgColor="#4ECDC4" direction="vertical" />
             </motion.div>
             {/* Rectangle 3 - Right Top */}
-            <motion.div className="absolute top-[25%] -right-16 sm:-right-24 md:-right-32">
+            <motion.div className="absolute top-[35%] -right-4 sm:-right-6 md:-right-8">
               <Rectangle bgColor="#45B7D1" direction="horizontal" />
             </motion.div>
             {/* Rectangle 4 - Right Bottom */}
-            <motion.div className="absolute top-[75%] -right-16 sm:-right-24 md:-right-32">
+            <motion.div className="absolute top-[65%] -right-4 sm:-right-6 md:-right-8">
               <Rectangle bgColor="#8B5CF6" direction="vertical" />
             </motion.div>
             {/* Rectangle 5 - Bottom Right */}
-            <motion.div className="absolute bottom-[5%] sm:bottom-[2%] right-[5%] sm:right-[2%]">
+            <motion.div className="absolute bottom-[10%] right-[10%]">
               <Rectangle bgColor="#FFA500" direction="horizontal" />
             </motion.div>
             {/* Rectangle 6 - Bottom */}
-            <motion.div className="absolute -bottom-16 sm:-bottom-24 md:-bottom-32 left-1/2 -translate-x-1/2">
+            <motion.div className="absolute -bottom-4 sm:-bottom-6 md:-bottom-8 left-1/2 -translate-x-1/2">
               <Rectangle bgColor="#FF69B4" direction="vertical" />
             </motion.div>
             {/* Rectangle 7 - Bottom Left */}
-            <motion.div className="absolute bottom-[5%] sm:bottom-[2%] left-[5%] sm:left-[2%]">
+            <motion.div className="absolute bottom-[10%] left-[10%]">
               <Rectangle bgColor="#32CD32" direction="horizontal" />
             </motion.div>
             {/* Rectangle 8 - Left Bottom */}
-            <motion.div className="absolute top-[75%] -left-16 sm:-left-24 md:-left-32">
+            <motion.div className="absolute top-[65%] -left-4 sm:-left-6 md:-left-8">
               <Rectangle bgColor="#9370DB" direction="vertical" />
             </motion.div>
             {/* Rectangle 9 - Left Top */}
-            <motion.div className="absolute top-[25%] -left-16 sm:-left-24 md:-left-32">
+            <motion.div className="absolute top-[35%] -left-4 sm:-left-6 md:-left-8">
               <Rectangle bgColor="#20B2AA" direction="horizontal" />
             </motion.div>
             {/* Rectangle 10 - Top Left */}
-            <motion.div className="absolute top-[5%] sm:top-[2%] left-[5%] sm:left-[2%]">
+            <motion.div className="absolute top-[10%] left-[10%]">
               <Rectangle bgColor="#FF7F50" direction="vertical" />
             </motion.div>
           </motion.div>
@@ -156,7 +224,7 @@ const SlideOne = () => {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
       <motion.div className="bg-black relative h-screen w-screen overflow-hidden">
         <div className="absolute inset-0">
           {/* Row 1 */}
