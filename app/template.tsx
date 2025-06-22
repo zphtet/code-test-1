@@ -13,10 +13,13 @@ export default function Template({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }, 2000);
 
-    const firstSection = document.getElementById("first");
-    if (firstSection) {
-      firstSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    // console.log("USE EFFECT WORKING");
+
+    // Scroll to the bottom of the page
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
 
     return () => clearTimeout(timer);
   }, []);
